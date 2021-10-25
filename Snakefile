@@ -11,7 +11,7 @@ rule determine_adjustments:
     input: "patient_metadata.csv"
     output: "{cytokine}_adjusted.tsv" "{cytokine}_unadjusted.tsv"
     log:
-    params:
+    params: 
     resources:
     scripts:
 
