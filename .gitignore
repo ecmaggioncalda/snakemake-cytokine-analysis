@@ -45,3 +45,6 @@ test*
 
 #ignore data files
 data/
+
+#ignore result files
+results/
