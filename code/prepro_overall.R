@@ -62,7 +62,7 @@ for(i in 1:length(cytokine_cols)){
     drop_na()
   
   write_tsv(unadjusted_out,
-            file = paste0("../data/", cytokine_cols[i], ".tsv"))
+            file = paste0("../data/", cytokine_cols[i], "_raw.tsv"))
   
 }
 
@@ -86,4 +86,6 @@ for(i in 1:length(variable_adjustment)){
   
 }
 
-
+dir.create(paste0("../results/", cytokine_cols))
+dir.create(paste0("../results/", cytokine_cols, "/results"))
+dir.create(paste0("../results/", cytokine_cols, "/plots"))
