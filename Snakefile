@@ -41,7 +41,7 @@ rule prepro_overall:
 #    scripts:
 #        "code/verify_adjustment_files.R"
 
-rule treeWAS:
+rule run_treeWAS:
     input:
         R = "code/run_treeWAS.R"
         geno = genome_data
@@ -90,29 +90,6 @@ rule run_hogwash_grouped:
     scripts:
         "code/run_hogwash_grouped.R"
 
-#I don't think this is necessary because each method has its own preprocess requirements, so I'll just do them within each method
-#rule preprocess_frames:
-#    input:
-#        R = "code/prepro_combine_matrices.R"
-#        pheno = "data/{cytokine}_{group}.tsv"
-#    output:
-#    log:
-#    params:
-#    resources:
-#    scripts:
-#        "code/prepro_combine_matrices.R"
-
-
-
-rule pan_hogwash:
-    input:
-    "combined_core.tsv"
-    output:
-    log:
-    params:
-    resources:
-    scripts:
-
 rule elastic_net:
     input: "combined_core.tsv"
     output:
@@ -120,8 +97,6 @@ rule elastic_net:
     params:
     resources:
     scripts:
-
-
 
 rule summarize_cytokine_results:
     input:
