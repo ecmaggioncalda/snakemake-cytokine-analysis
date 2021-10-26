@@ -1,6 +1,8 @@
 patient_metadata: data/otu_large.csv
 core_genome_data: data/core.tsv
 pan_genome_data: data/pan.tsv
+gene_key: data/grouped_gene_key.tsv
+tree: data/cytokine_rooted_tree.tree
 #outcome_colname: dx
 ml_methods:
  - glmnet

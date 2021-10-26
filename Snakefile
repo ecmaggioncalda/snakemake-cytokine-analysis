@@ -1,7 +1,10 @@
 configfile: 'config/config.yml'
 
-core_genome_data = config['core_genome_data']
-pan_genome_data = config['pan_genome_data']
+tree = config['tree']
+core = config['core_genome_data']
+pan = config['pan_genome_data']
+genome_data = [core, pan]
+group = ["raw", "adjusted"]
 
 ncores = config['ncores']
 ml_methods = config['ml_methods']
@@ -17,8 +20,10 @@ rule prepro_overall:
         R = "code/prepro_overall.R",
         patient_metadata = config['patient_metadata']
     output:
-        "data/{cytokine}.tsv"
-        "data/{cytokine}_adjusted.tsv"
+        "data/{cytokine}_{group}.tsv"
+        directory("results/{cytokine}")
+        directory("results/{cytokine}/plots")
+        directory("results/{cytokine}/results")
     log: "log/prepro_overall.txt"
     params:
     resources:
@@ -26,24 +31,89 @@ rule prepro_overall:
     scripts:
         "code/prepro_overall.R"
 
-checkpoint adjustments:
+###Come back to this, need a checkpoint to trim the initial DAG since not all cytokines have an adjusted file
+#checkpoint adjustments:
+#    input:
+#        R = "code/verify_adjustment_files.R"
+#        "data/{cytokine}.tsv"
+#    output:
+#
+#    scripts:
+#        "code/verify_adjustment_files.R"
+
+rule treeWAS:
     input:
-        R = "code/verify_adjustment_files.R"
-        "data/{cytokine}.tsv"
+        R = "code/run_treeWAS.R"
+        geno = genome_data
+        pheno = 'data/{cytokine}_{group}.tsv'
+        tree = tree
     output:
-        directory("/{cytokine}_adjusted")
+        rdata = 'results/{cytokine}/results/{cytokine}_{group}_{geno}_treeWAS.RData'
+        plot = 'results/{cytokine}/plots/{cytokine}_{group}_{geno}_treeWAS.pdf'
+    log:
+        "log/{cytokine}_{group}_{geno}_treeWAS.txt"
+    resources:
+        ncores = ncores
     scripts:
-        "code/verify_adjustment_files.R"
+        "code/run_treeWAS.R"
 
-rule preprocess_frames:
+rule run_hogwash_ungrouped:
     input:
+        R = "code/run_hogwash_ungrouped.R"
+        geno = genome_data
+        pheno = 'data/{cytokine}_{group}.tsv'
+        tree = tree
+    output:
+        file_name = '{cytokine}_{group}_{geno}_hogwash_ungrouped'
+        dir = "results/{cytokine}/results/"
+    log:
+        "log/{cytokine}_{group}_{geno}_hogwash_ungrouped.txt"
+    resources:
+        ncores = ncores
+    scripts:
+        "code/run_hogwash_ungrouped.R"
+
+rule run_hogwash_grouped:
+    input:
+        R = "code/run_hogwash_grouped.R"
+        geno = core
+        pheno = 'data/{cytokine}_{group}.tsv'
+        tree = tree
+        gene_key = config['gene_key']
+    output:
+        file_name = '{cytokine}_{group}_{geno}_hogwash_grouped'
+        dir = "results/{cytokine}/results/"
+    log:
+        "log/{cytokine}_{group}_{geno}_hogwash_grouped.txt"
+    resources:
+        ncores = ncores
+    scripts:
+        "code/run_hogwash_grouped.R"
+
+#I don't think this is necessary because each method has its own preprocess requirements, so I'll just do them within each method
+#rule preprocess_frames:
+#    input:
+#        R = "code/prepro_combine_matrices.R"
+#        pheno = "data/{cytokine}_{group}.tsv"
+#    output:
+#    log:
+#    params:
+#    resources:
+#    scripts:
+#        "code/prepro_combine_matrices.R"
+
+
+
+rule pan_hogwash:
+    input:
+    "combined_core.tsv"
     output:
     log:
     params:
     resources:
     scripts:
 
-rule core_genome_hogwash:
+rule elastic_net:
     input: "combined_core.tsv"
     output:
     log:
@@ -51,45 +121,7 @@ rule core_genome_hogwash:
     resources:
     scripts:
 
-rule core_genome_elastic_net:
-    input: "combined_core.tsv"
-    output:
-    log:
-    params:
-    resources:
-    scripts:
 
-rule core_genome_treeWAS:
-    input: "combined_core.tsv"
-    output:
-    log:
-    params:
-    resources:
-    scripts:
-
-rule pan_genome_hogwash:
-    input: "pan_matrix.tsv"
-    output:
-    log:
-    params:
-    resources:
-    scripts:
-
-rule pan_genome_elastic_net:
-    input: "pan_matrix.tsv"
-    output:
-    log:
-    params:
-    resources:
-    scripts:
-
-rule pan_genome_treeWAS:
-    input: "pan_matrix.tsv"
-    output:
-    log:
-    params:
-    resources:
-    scripts:
 
 rule summarize_cytokine_results:
     input:
