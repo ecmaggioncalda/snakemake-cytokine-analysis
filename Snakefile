@@ -1,6 +1,5 @@
 configfile: 'config/config.yml'
 
-patient_metadata = config['patient_metadata']
 core_genome_data = config['core_genome_data']
 pan_genome_data = config['pan_genome_data']
 
@@ -13,13 +12,28 @@ nseeds = config['nseeds']
 start_seed = 100
 seeds = range(start_seed, start_seed + nseeds)
 
-rule determine_adjustments:
-    input: patient_metadata
-    output: "{cytokine}_adjusted.tsv" "{cytokine}_unadjusted.tsv"
-    log:
+rule prepro_overall:
+    input:
+        R = "code/prepro_overall.R",
+        patient_metadata = config['patient_metadata']
+    output:
+        "data/{cytokine}.tsv"
+        "data/{cytokine}_adjusted.tsv"
+    log: "log/prepro_overall.txt"
     params:
     resources:
+        ncores = ncores
     scripts:
+        "code/prepro_overall.R"
+
+checkpoint adjustments:
+    input:
+        R = "code/verify_adjustment_files.R"
+        "data/{cytokine}.tsv"
+    output:
+        directory("/{cytokine}_adjusted")
+    scripts:
+        "code/verify_adjustment_files.R"
 
 rule preprocess_frames:
     input:
