@@ -1,0 +1,13 @@
+patient_metadata: data/otu_large.csv
+core_genome_data: data/core.tsv
+pan_genome_data: data/pan.tsv
+#outcome_colname: dx
+ml_methods:
+ - glmnet
+ - rf
+ - svmRadial
+kfold: 5
+ncores: 36
+nseeds: 100
+cytokines:
+  - serum_IL.6
