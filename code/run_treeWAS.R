@@ -17,7 +17,7 @@ pheno <- readr::read_delim(file = snakemake@input[["pheno"]],
 #                           delim = "\t")
 
 #GENO ----
-geno <- read.delim(file = snakemake@input[["geno"]],
+geno <- read.delim(file = snakemake@params[["geno"]],
                    row.names = 1)
 #geno <- read.delim(file = "../../data/pan_matrix/pan_geno.tsv",
 #                   row.names = 1)
@@ -29,7 +29,7 @@ pheno <- pheno %>%
 pheno <- deframe(pheno)
 
 # TREE ----
-tree <- read.tree(snakemake@input[["tree"]])
+tree <- read.tree(snakemake@params[["tree"]])
 #tree <- read.tree("../../data/cytokine_rooted_tree.tree")
 
 #PRINT STATEMENTS ----
