@@ -48,3 +48,6 @@ data/
 
 #ignore result files
 results/
+
+#ignore Rproj
+snakemake-cytokine-analysis.Rproj
