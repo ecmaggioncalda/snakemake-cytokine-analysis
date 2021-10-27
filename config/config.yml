@@ -1,7 +1,8 @@
 patient_metadata: data/otu_large.csv
 core_genome_data: data/core.tsv
 pan_genome_data: data/pan.tsv
-#outcome_colname: dx
+gene_key: data/grouped_gene_key.tsv
+tree: data/cytokine_rooted_tree.tree
 ml_methods:
  - glmnet
  - rf
@@ -11,3 +12,5 @@ ncores: 36
 nseeds: 100
 cytokines:
   - serum_IL.6
+  - serum_TNFa
+  - serum_Procalcitonin
