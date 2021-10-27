@@ -9,7 +9,6 @@ group = ["raw", "adjusted"]
 ncores = config['ncores']
 ml_methods = config['ml_methods']
 kfold = config['kfold']
-outcome_colname = config['outcome_colname']
 
 nseeds = config['nseeds']
 start_seed = 100
@@ -24,8 +23,8 @@ rule prepro_overall:
         directory("results/{cytokine}")
         directory("results/{cytokine}/plots")
         directory("results/{cytokine}/results")
-    log: "log/prepro_overall.txt"
-    params:
+    log:
+        "log/prepro_overall.txt"
     resources:
         ncores = ncores
     scripts:
@@ -90,18 +89,18 @@ rule run_hogwash_grouped:
     scripts:
         "code/run_hogwash_grouped.R"
 
-rule elastic_net:
-    input: "combined_core.tsv"
-    output:
-    log:
-    params:
-    resources:
-    scripts:
+#rule elastic_net:
+#    input: "combined_core.tsv"
+#    output:
+#    log:
+#    params:
+#    resources:
+#    scripts:
 
-rule summarize_cytokine_results:
-    input:
-    output:
-    log:
-    params:
-    resources:
-    scripts:
+#rule summarize_cytokine_results:
+#    input:
+#    output:
+#    log:
+#    params:
+#    resources:
+#    scripts:
