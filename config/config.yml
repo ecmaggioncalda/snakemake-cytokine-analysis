@@ -1,6 +1,6 @@
 patient_metadata: data/otu_large.csv
-core_genome_data: data/core.tsv
-pan_genome_data: data/pan.tsv
+core: data/core.tsv
+pan: data/pan.tsv
 gene_key: data/grouped_gene_key.tsv
 tree: data/cytokine_rooted_tree.tree
 ml_methods:
@@ -10,7 +10,7 @@ ml_methods:
 kfold: 5
 ncores: 36
 nseeds: 100
-cytokines:
+cytokine:
   - serum_IL.6
   - serum_TNFa
   - serum_Procalcitonin
