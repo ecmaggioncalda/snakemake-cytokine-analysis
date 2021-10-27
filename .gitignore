@@ -51,3 +51,4 @@ results/
 
 #ignore Rproj
 snakemake-cytokine-analysis.Rproj
+.snakemake/
