@@ -49,6 +49,10 @@ data/
 #ignore result files
 results/
 
+#ignore log files
+log/
+
 #ignore Rproj
 snakemake-cytokine-analysis.Rproj
 .snakemake/
+mikropml-snakemake-workflow/
