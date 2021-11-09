@@ -43,14 +43,13 @@ vignettes/*.pdf
 #ignore test files
 test*
 
-#ignore data files
+#ignore large folders
 data/
-
-#ignore result files
 results/
-
-#ignore log files
 log/
+aggregated/
+benchmarks/
+figures/
 
 #ignore Rproj
 snakemake-cytokine-analysis.Rproj
