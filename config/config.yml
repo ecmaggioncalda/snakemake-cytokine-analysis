@@ -8,12 +8,12 @@ ml_methods:
  - rf
  - svmRadial
 kfold: 5
-ncores: 4
+ncores: 2
 nseeds: 2
 cytokine:
-  - serum_TNFa
-  - serum_IL.6
-  - serum_IL.8
+#  - serum_TNFa
+#  - serum_IL.6
+#  - serum_IL.8
 #  - serum_MCP.1
 #  - serum_MIP.1b
 #  - serum_Procalcitonin
@@ -23,8 +23,8 @@ cytokine:
 #  - serum_HGF
 #  - serum_IP.10
 #  - serum_EGF
-#  - serum_IL.22
-#  - serum_IL.2Ra
+  # - serum_IL.22
+  - serum_IL.2Ra
 #  - serum_IL.15
 #  - serum_IL.23
 #  - serum_CCL5.RANTES

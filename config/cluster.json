@@ -11,6 +11,14 @@
   "mail_type": "FAIL",
   "outfile": "log/hpc/jobs/{rule}.{wildcards}.out"
  },
+ "prepro_overall": {
+   "procs": "{resources.ncores}",
+   "pmem": "2GB"
+ },
+ "run_treeWAS": {
+   "procs": "{resources.ncores}",
+   "pmem": "10GB"
+ },
  "preprocess_data": {
   "procs": "{resources.ncores}",
   "pmem": "2GB"
