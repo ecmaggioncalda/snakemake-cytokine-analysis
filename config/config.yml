@@ -8,8 +8,8 @@ ml_methods:
  - rf
  - svmRadial
 kfold: 5
-ncores: 2
-nseeds: 2
+ncores: 36
+nseeds: 100
 cytokine:
 #  - serum_TNFa
 #  - serum_IL.6
@@ -23,7 +23,7 @@ cytokine:
 #  - serum_HGF
 #  - serum_IP.10
 #  - serum_EGF
-  # - serum_IL.22
+#  - serum_IL.22
   - serum_IL.2Ra
 #  - serum_IL.15
 #  - serum_IL.23

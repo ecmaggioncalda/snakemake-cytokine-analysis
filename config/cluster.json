@@ -5,6 +5,7 @@
   "jobname": "{rule}.{wildcards}",
   "nodes": 1,
   "procs": 1,
+  "cpus" : 1,
   "pmem": "8GB",
   "walltime": "96:00:00",
   "email": "emilycma@umich.edu",
@@ -16,8 +17,23 @@
    "pmem": "2GB"
  },
  "run_treeWAS": {
-   "procs": "{resources.ncores}",
    "pmem": "10GB"
+ },
+ "run_hogwash_grouped": {
+   "procs": "{resources.ncores}",
+   "pmem": "48GB",
+   "walltime": "250:00:00",
+   "cpus": 4
+ },
+ "run_hogwash_ungrouped": {
+   "procs": "{resources.ncores}",
+   "pmem": "48GB",
+   "walltime": "250:00:00",
+   "cpus": 4
+ },
+ "generate_mikropml_df": {
+   "procs": "{resources.ncores}",
+   "pmem": "2GB"
  },
  "preprocess_data": {
   "procs": "{resources.ncores}",
