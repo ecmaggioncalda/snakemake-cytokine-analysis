@@ -2,8 +2,9 @@ configfile: 'config/config.yml'
 
 cytokine = config['cytokine']
 tree = config['tree']
-#group = ["raw", "adjusted"]
-genome = ["pan", "core"]
+# group = ["raw", "adjusted"]
+# genome = ["pan", "core"]
+genome = ["pan"]
 model = ["hogwash.ungrouped.rda", "treeWAS.RData"]
 
 ncores = config['ncores']
@@ -13,12 +14,6 @@ kfold = config['kfold']
 nseeds = config['nseeds']
 start_seed = 100
 seeds = range(start_seed, start_seed + nseeds)
-
-# wildcard_constraints:
-#     #group="\w",
-#     genome="\w"
-#
-# ruleorder: prepro_overall > generate_mikropml_df
 
 rule all:
     input:
@@ -60,8 +55,8 @@ rule run_hogwash_ungrouped:
         R = "code/run_hogwash_ungrouped.R",
         pheno = "data/pheno/{cytokine}/{group}.tsv"
     output:
-        rdata = "results/{cytokine}/{group}.{genome}.hogwash.ungrouped.rda",
-        plot = "results/{cytokine}/{group}.{genome}.hogwash.ungrouped.pdf"
+        rdata = protected("results/{cytokine}/{group}.{genome}.hogwash.ungrouped.rda"),
+        plot = protected("results/{cytokine}/{group}.{genome}.hogwash.ungrouped.pdf")
     params:
         core_path = config['core'],
         pan_path = config['pan'],
@@ -75,25 +70,25 @@ rule run_hogwash_ungrouped:
     script:
         "code/run_hogwash_ungrouped.R"
 
-rule run_hogwash_grouped:
-    input:
-        R = "code/run_hogwash_grouped.R",
-        pheno = "data/pheno/{cytokine}/{group}.tsv"
-    output:
-        rdata = "results/{cytokine}/{group}.core.hogwash.grouped.rda",
-        plot = "results/{cytokine}/{group}.core.hogwash.grouped.pdf"
-    params:
-        core_path = config['core'],
-        tree = tree,
-        file_name = '{group}.core.hogwash.grouped',
-        dir = "results/{cytokine}",
-        gene_key = config['gene_key']
-    log:
-        "log/{cytokine}/{group}.core.hogwash.grouped.txt"
-    resources:
-        ncores = ncores
-    script:
-        "code/run_hogwash_grouped.R"
+# rule run_hogwash_grouped:
+#     input:
+#         R = "code/run_hogwash_grouped.R",
+#         pheno = "data/pheno/{cytokine}/{group}.tsv"
+#     output:
+#         rdata = protected("results/{cytokine}/{group}.core.hogwash.grouped.rda"),
+#         plot = protected("results/{cytokine}/{group}.core.hogwash.grouped.pdf")
+#     params:
+#         core_path = config['core'],
+#         tree = tree,
+#         file_name = '{group}.core.hogwash.grouped',
+#         dir = "results/{cytokine}",
+#         gene_key = config['gene_key']
+#     log:
+#         "log/{cytokine}/{group}.core.hogwash.grouped.txt"
+#     resources:
+#         ncores = ncores
+#     script:
+#         "code/run_hogwash_grouped.R"
 
 rule generate_mikropml_df:
     input:
@@ -121,11 +116,11 @@ def aggregate_input1(wildcards):
         genome=genome,
         model=model)
 
-def aggregate_input2(wildcards):
-    checkpoint_output = checkpoints.prepro_overall.get(**wildcards).output[0]
-    return expand('results/{cytokine}/{group}.core.hogwash.grouped.rda',
-        cytokine=wildcards.cytokine,
-        group=glob_wildcards(os.path.join(checkpoint_output,"{group}.tsv")).group)
+# def aggregate_input2(wildcards):
+#     checkpoint_output = checkpoints.prepro_overall.get(**wildcards).output[0]
+#     return expand('results/{cytokine}/{group}.core.hogwash.grouped.rda',
+#         cytokine=wildcards.cytokine,
+#         group=glob_wildcards(os.path.join(checkpoint_output,"{group}.tsv")).group)
 
 # def aggregate_input3(wildcards):
 #     checkpoint_output = checkpoints.prepro_overall.get(**wildcards).output[0]
@@ -144,41 +139,14 @@ def aggregate_input4(wildcards):
 rule finish_test:
     input:
         aggregate_input1,
-        aggregate_input2,
+        # aggregate_input2,
         # aggregate_input3,
         aggregate_input4
     output:
         "aggregated/{cytokine}.runs.csv"
     log:
         "log/{cytokine}_finish.txt"
-    shell:
-        "cat {input} > {output}"
-    # "   import os       "
-    # "   os.listdir('./results/{wildcards.cytokine}') > file_list        "
-    # "   import csv      "
-    # "   with open('aggregated/{cytokine}.runs.csv', 'wt', newline= '') as outfile:      "
-    # "       writer = csv.writer(outfile, delimiter = '\t')      "
-    # "       writer.writerows()     "
-    #system
-         # I should modify this so that the shell output is something that is actually useful, right now it is non-human readable but functions for the workflow
-         # '''
-         # import csv
-         #     with open('aggregated/{cytokine}.tsv', 'wt') as out_file:
-         #         tsv_writer = csv.writer(out_file, delimiter='\t')
-         #         tsv_writer.writerows({input})
-         # '''
-#
-
-#include: "rules/summarize.smk", this should probably actually be a directory up instead of below, but I didn't think it through this way initially
-#alternatively could create a sub-workflow snakefile that just depends on the outputs, need to figure out which is preferable workflow-wise
-#
-#rule summarize_cytokine_results:
-#    input:
-#    output:
-#    log:
-#    params:
-#    resources:
-#    script:
-#
-#probably also want to mark the outputs of hogwash as protected since they take so long to run?
-#
+    script:
+        "code/assemble_files.py"
+    # shell:
+    #     "cat {input} > {output}"
