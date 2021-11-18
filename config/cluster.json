@@ -13,23 +13,18 @@
   "outfile": "log/hpc/jobs/{rule}.{wildcards}.out"
  },
  "prepro_overall": {
-   "procs": "{resources.ncores}",
    "pmem": "2GB"
  },
  "run_treeWAS": {
    "pmem": "10GB"
  },
  "run_hogwash_grouped": {
-   "procs": "{resources.ncores}",
    "pmem": "48GB",
-   "walltime": "250:00:00",
-   "cpus": 4
+   "walltime": "96:00:00"
  },
  "run_hogwash_ungrouped": {
-   "procs": "{resources.ncores}",
    "pmem": "48GB",
-   "walltime": "250:00:00",
-   "cpus": 4
+   "walltime": "96:00:00"
  },
  "generate_mikropml_df": {
    "procs": "{resources.ncores}",

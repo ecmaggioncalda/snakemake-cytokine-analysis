@@ -1,6 +1,9 @@
 patient_metadata: data/patient_metadata.csv
 core: data/combined_core.tsv
 pan: data/pan_geno.tsv
+genome:
+  - pan
+  # - core
 gene_key: data/grouped_core_gene_key.tsv
 tree: data/cytokine_rooted_tree.tree
 ml_methods:
@@ -8,8 +11,8 @@ ml_methods:
  - rf
  - svmRadial
 kfold: 5
-ncores: 36
-nseeds: 100
+ncores: 4
+nseeds: 10
 cytokine:
 #  - serum_TNFa
 #  - serum_IL.6
