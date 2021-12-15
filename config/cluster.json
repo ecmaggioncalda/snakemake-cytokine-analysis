@@ -27,12 +27,11 @@
    "walltime": "96:00:00"
  },
  "generate_mikropml_df": {
-   "procs": "{resources.ncores}",
-   "pmem": "2GB"
+   "pmem": "10GB"
  },
  "preprocess_data": {
   "procs": "{resources.ncores}",
-  "pmem": "2GB"
+  "pmem": "4GB"
  },
  "run_ml": {
   "procs": "{resources.ncores}",

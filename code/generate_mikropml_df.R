@@ -26,18 +26,28 @@ if(snakemake@wildcards[['genome']] == "pan"){
   geno <- read.delim(file = snakemake@params[['pan_path']],
                      row.names = 1)
   
-}else{
+}else if(snakemake@wildcards[['genome']] == "snp"){
   
-  print(paste0("using core genome path:", snakemake@params[['core_path']]))
+  print(paste0("using snp genome path:", snakemake@params[['snp_path']]))
   
-  geno <- read.delim(file = snakemake@params[['core_path']],
+  geno <- read.delim(file = snakemake@params[['snp_path']],
                      row.names = 1)
+  
+}else if(snakemake@wildcards[['genome']] == "gene"){
+  
+  print(paste0("using gene genome path:", snakemake@params[['gene_path']]))
+  
+  geno <- read.delim(file = snakemake@params[['gene_path']],
+                     row.names = 1)
+  
 }
+
+print("Geno matrix has completed read in")
 
 geno_merge <- t(geno)
 
 if(sum(rownames(pheno_merge) %in% rownames(geno_merge)) != length(rownames(pheno_merge))){
-  print("mismatch between pheno and geno contents")
+  stop("mismatch between pheno and geno contents")
 }
 
 index <- match(rownames(pheno_merge), rownames(geno_merge))
@@ -45,11 +55,14 @@ index <- match(rownames(pheno_merge), rownames(geno_merge))
 geno_ordered <- geno_merge[index, , drop = FALSE]
 
 if(sum(rownames(pheno_merge) == rownames(geno_ordered)) != length(rownames(pheno_merge))){
-  print("mismatch between pheno and geno contents")
+  stop("mismatch between pheno and geno contents")
 }
 
 complete_frame <- cbind(pheno_merge,
                         geno_ordered)
+
+print("complete frame generated with pheno:geno, export to csv for mikropml preprocessing")
+
 #GENERATE FILES ----
 #patient and genome factors
 write_csv(complete_frame,

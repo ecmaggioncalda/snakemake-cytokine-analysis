@@ -36,8 +36,9 @@ rule generate_mikropml_df:
     output:
         file_name = "data/mikropml/{cytokine}/{group}.{genome}.csv"
     params:
-        core_path = config['core'],
+        snp_path = config['snp'],
         pan_path = config['pan'],
+        gene_path = config['gene']
     log:
         "log/{cytokine}/{group}.{genome}.generate_mikropml_df.txt"
     resources:
@@ -56,8 +57,6 @@ rule run_treeWAS:
         rdata = 'results/{cytokine}/{group}.{genome}.treeWAS.RData',
         plot = 'results/{cytokine}/{group}.{genome}.treeWAS.pdf'
     params:
-        core_path = config['core'],
-        pan_path = config['pan'],
         tree = tree
     log:
         "log/{cytokine}/{group}.{genome}.treeWAS.txt"
@@ -75,8 +74,6 @@ rule run_hogwash_ungrouped:
         rdata = "results/{cytokine}/hogwash_continuous_{group}.{genome}.ungrouped.rda",
         plot = "results/{cytokine}/hogwash_continuous_{group}.{genome}.ungrouped.pdf"
     params:
-        core_path = config['core'],
-        pan_path = config['pan'],
         tree = tree,
         file_name = '{group}.{genome}.ungrouped',
         dir = "results/{cytokine}"
@@ -87,26 +84,27 @@ rule run_hogwash_ungrouped:
     script:
         "code/run_hogwash_ungrouped.R"
 
-rule run_hogwash_grouped:
-    input:
-        R = "code/run_hogwash_grouped.R",
-        pheno = "data/pheno/{cytokine}/{group}.tsv",
-        rds = rules.preprocess_data.output.rds
-    output:
-        rdata = protected("results/{cytokine}/hogwash_continuous_{group}.core.grouped.rda"),
-        plot = protected("results/{cytokine}/hogwash_continuous_{group}.core.grouped.pdf")
-    params:
-        core_path = config['core'],
-        tree = tree,
-        file_name = '{group}.core.grouped',
-        dir = "results/{cytokine}",
-        gene_key = config['gene_key']
-    log:
-        "log/{cytokine}/{group}.core.hogwash.grouped.txt"
-    resources:
-        ncores = ncores
-    script:
-        "code/run_hogwash_grouped.R"
+# rule run_hogwash_grouped:
+#     input:
+#         R = "code/run_hogwash_grouped.R",
+#         pheno = "data/pheno/{cytokine}/{group}.tsv",
+#         rds = rules.preprocess_data.output.rds
+#     output:
+#         rdata = protected("results/{cytokine}/hogwash_continuous_{group}.{genome}.grouped.rda"),
+#         plot = protected("results/{cytokine}/hogwash_continuous_{group}.{genome}.grouped.pdf")
+#     params:
+#         tree = tree,
+#         file_name = '{group}.{genome}.grouped',
+#         dir = "results/{cytokine}",
+#         gene_key = config['gene_key']
+#     wildcard_constraints:
+#         genome = "snp"
+#     log:
+#         "log/{cytokine}/{group}.{genome}.hogwash.grouped.txt"
+#     resources:
+#         ncores = ncores
+#     script:
+#         "code/run_hogwash_grouped.R"
 
 def aggregate_input1(wildcards):
     checkpoint_output = checkpoints.prepro_overall.get(**wildcards).output[0]
@@ -122,11 +120,12 @@ def aggregate_input2(wildcards):
         group=glob_wildcards(os.path.join(checkpoint_output,"{group}.tsv")).group,
         genome=genome)
 
-def aggregate_input3(wildcards):
-    checkpoint_output = checkpoints.prepro_overall.get(**wildcards).output[0]
-    return expand('results/{cytokine}/hogwash_continuous_{group}.core.grouped.rda',
-        cytokine=wildcards.cytokine,
-        group=glob_wildcards(os.path.join(checkpoint_output,"{group}.tsv")).group)
+# def aggregate_input3(wildcards):
+#     checkpoint_output = checkpoints.prepro_overall.get(**wildcards).output[0]
+#     return expand('results/{cytokine}/hogwash_continuous_{group}.{genome}.grouped.rda',
+#         cytokine=wildcards.cytokine,
+#         group=glob_wildcards(os.path.join(checkpoint_output,"{group}.tsv")).group,
+#         genome = "snp")
 
 def aggregate_input4(wildcards):
     checkpoint_output = checkpoints.prepro_overall.get(**wildcards).output[0]
@@ -135,14 +134,17 @@ def aggregate_input4(wildcards):
         group=glob_wildcards(os.path.join(checkpoint_output,"{group}.tsv")).group,
         genome=genome)
 
-if 'core' in genome:
-    finish_list = [aggregate_input1, aggregate_input2, aggregate_input3, aggregate_input4]
-else:
-    finish_list = [aggregate_input1, aggregate_input2, aggregate_input4]
+# if 'snp' in genome:
+#     finish_list = [aggregate_input1, aggregate_input2, aggregate_input3, aggregate_input4]
+# else:
+#     finish_list = [aggregate_input1, aggregate_input2, aggregate_input4]
 
 rule finish_test:
     input:
-        finish_list
+        # finish_list
+        aggregate_input1,
+        aggregate_input2,
+        aggregate_input4
     output:
         "aggregated/{cytokine}.runs.csv"
     log:

@@ -1,9 +1,11 @@
 patient_metadata: data/patient_metadata.csv
-core: data/combined_core.tsv
+snp: data/snp_mat.tsv
 pan: data/pan_geno.tsv
+gene: data/gene_mat.tsv
 genome:
   - pan
-  # - core
+  # - snp
+  - gene
 gene_key: data/grouped_core_gene_key.tsv
 tree: data/cytokine_rooted_tree.tree
 ml_methods:
@@ -11,11 +13,12 @@ ml_methods:
  - rf
  - svmRadial
 kfold: 5
-ncores: 4
-nseeds: 10
+ncores: 36
+nseeds: 100
 cytokine:
-#  - serum_TNFa
-#  - serum_IL.6
+ # - serum_TNFa
+ # - serum_IL.6
+ - serum_IL.2Ra
 #  - serum_IL.8
 #  - serum_MCP.1
 #  - serum_MIP.1b
@@ -27,7 +30,6 @@ cytokine:
 #  - serum_IP.10
 #  - serum_EGF
 #  - serum_IL.22
-  - serum_IL.2Ra
 #  - serum_IL.15
 #  - serum_IL.23
 #  - serum_CCL5.RANTES
