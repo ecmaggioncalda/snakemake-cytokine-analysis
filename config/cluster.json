@@ -5,7 +5,6 @@
   "jobname": "{rule}.{wildcards}",
   "nodes": 1,
   "procs": 1,
-  "cpus" : 1,
   "pmem": "8GB",
   "walltime": "96:00:00",
   "email": "emilycma@umich.edu",
@@ -13,10 +12,10 @@
   "outfile": "log/hpc/jobs/{rule}.{wildcards}.out"
  },
  "prepro_overall": {
-   "pmem": "2GB"
+   "pmem": "{resources.mem_mb}"
  },
  "run_treeWAS": {
-   "pmem": "10GB"
+   "pmem": "{resources.mem_mb}"
  },
  "run_hogwash_grouped": {
    "pmem": "48GB",
@@ -27,17 +26,17 @@
    "walltime": "96:00:00"
  },
  "generate_mikropml_df": {
-   "pmem": "10GB"
+   "pmem": "{resources.mem_mb}"
  },
  "preprocess_data": {
   "procs": "{resources.ncores}",
-  "pmem": "4GB"
+  "pmem": "{resources.mem_mb}"
  },
  "run_ml": {
   "procs": "{resources.ncores}",
-  "pmem": "4GB"
+  "pmem": "{resources.mem_mb}"
  },
  "combine_hp_performance": {
-  "pmem": "16GB"
+  "pmem": "{resources.mem_mb}"
  }
 }
