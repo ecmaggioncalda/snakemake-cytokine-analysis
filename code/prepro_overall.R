@@ -1,7 +1,6 @@
-#Script to build the individual phenotype files for each cytokine
-#Determine which cytokines will have an additional branch using weighted elix score adjustment
-#This is a snakemake compatible script based on the script 02_patient_covariates_analysis.R and patient_metadata_summary_markdown.Rmd
-
+# Builds individual phenotype file and generates necessary directories for snakemake workflow
+# This file would need to be updated based on the measures that the investigator is taking to adjust the continuous measure
+# In this example, cytokines of interest are adjusted based on association with weighted elix score
 source("code/log_smk.R") #this assigns the log file for the run
 #LIBRARIES ----
 library(tidyverse)
@@ -12,27 +11,16 @@ doFuture::registerDoFuture()
 future::plan(future::multicore, workers = snakemake@resources[["ncores"]])
 
 #FILES ----
-pheno_cov <- readr::read_csv(file = snakemake@input[["patient_metadata"]])
-pheno_cov <- pheno_cov %>%
-  drop_na(elix_weighted_update) %>%
-  filter(clade != "cryptic")
+pheno <- readr::read_csv(file = snakemake@input[["metadata"]])
+phenotype_cols <- snakemake@wildcards[["phenotype"]]
 
-# pheno_cov <- readr::read_csv(file = "./data/patient_metadata.csv")
-
-#CYTOKINES----
-cytokine_cols <- snakemake@wildcards[["cytokine"]]
-# cytokine_cols <- grep("serum|stool", colnames(pheno_cov), value = TRUE)
-# cytokine_cols <- "testing"
-# cytokine_cols <- "serum_IL.2Ra"
-
-#cytokine_cols <- cytokine_cols[1]
 paths <- paste0(c("data/pheno/",
                   "results/",
                   "benchmarks/",
                   "figures/",
                   "log/",
                   "data/mikropml/"),
-                cytokine_cols)
+                phenotype_cols)
 
 for(i in 1:length(paths)){
   
@@ -47,7 +35,7 @@ for(i in 1:length(paths)){
   }
 }
 
-new_dir3 <- paste0("results/", cytokine_cols, "/runs")
+new_dir3 <- paste0("results/", phenotype_cols, "/runs")
 
 if(dir.exists(new_dir3) == FALSE){
   
@@ -59,24 +47,21 @@ if(dir.exists(new_dir3) == FALSE){
     
   }
 
-
-
 #UNADJUSTED FILE ----
-unadjusted_out <- pheno_cov %>%
-  filter(clade != "cryptic") %>%
+unadjusted_out <- pheno %>%
   select(genome_id,
-         all_of(cytokine_cols),
+         all_of(phenotype_cols),
          elix_weighted_update) %>%
   drop_na() %>%
   mutate(elix_weighted_update = NULL)
   
   write_tsv(unadjusted_out,
-            file = paste0("data/pheno/", cytokine_cols, "/raw.tsv"))
+            file = paste0("data/pheno/", phenotype_cols, "/raw.tsv"))
 
 #EVALUATE SIGNIFICANT ELIX ASSOCIATIONS, GENERATE ADJUSTED ----
   model <- paste0("summary(lm(",
-                  cytokine_cols,
-                  " ~ elix_weighted_update, data = pheno_cov))")
+                  phenotype_cols,
+                  " ~ elix_weighted_update, data = pheno))")
   
   out_model <- eval(str2lang(model))
   
@@ -84,20 +69,19 @@ unadjusted_out <- pheno_cov %>%
   
   if(out_model$r.squared > 0.10){
     
-    adjusted_out <- pheno_cov %>%
-      filter(clade != "cryptic") %>%
-      mutate(adjusted_cytokine = eval(str2lang(cytokine_cols)) - (elix_weighted_update*out_coefs[2,1] + out_coefs[1,1])) %>%
+    adjusted_out <- pheno %>%
+      mutate(adjusted_phenotype = eval(str2lang(phenotype_cols)) - (elix_weighted_update*out_coefs[2,1] + out_coefs[1,1])) %>%
       #view()
       select(genome_id,
-             adjusted_cytokine,
+             adjusted_phenotype,
              elix_weighted_update) %>%
       drop_na() %>%
       mutate(elix_weighted_update = NULL) #%>%
       #view()
     
     colnames(adjusted_out) <- c("genome_id",
-                                cytokine_cols)
+                                phenotype_cols)
     
     write_tsv(adjusted_out,
-              file = paste0("data/pheno/", cytokine_cols, "/adjusted.tsv"))
+              file = paste0("data/pheno/", phenotype_cols, "/adjusted.tsv"))
   }

@@ -1,5 +1,5 @@
-#Script to run hogwash on each cytokine/genome combination
-source("code/log_smk.R") #this assigns the log file for the run
+#Script to run hogwash ungrouped
+source("code/log_smk.R")
 #LIBRARIES ----
 library(ape)
 library(tidyverse)
@@ -12,7 +12,6 @@ future::plan(future::multicore, workers = snakemake@resources[["ncores"]])
 
 #USE MIKROPML RDS ----
 rds <- readRDS(snakemake@input[["rds"]])$dat_transformed
-# rds <- readRDS("data/mikropml/serum_IL.2Ra/raw.pan.dat_proc.Rds")$dat_transformed
 
 #PHENO ----
 paste0(snakemake@input[["pheno"]])
@@ -21,22 +20,7 @@ pheno <- readr::read_delim(file = snakemake@input[["pheno"]],
                            delim = "\t")
 
 #GENO ----
-geno <- rds[, !grepl(snakemake@wildcards[['cytokine']], colnames(rds))]
-
-# if(snakemake@wildcards[['genome']] == "pan"){
-#   
-#   print(paste0("using pan genome path:", snakemake@params[['pan_path']]))
-#   
-#   geno <- read.delim(file = snakemake@params[['pan_path']],
-#                      row.names = 1)
-#   
-# }else{
-#   
-#   print(paste0("using core genome path:", snakemake@params[['core_path']]))
-#   
-#   geno <- read.delim(file = snakemake@params[['core_path']],
-#                      row.names = 1)
-# }
+geno <- rds[, !grepl(snakemake@wildcards[['phenotype']], colnames(rds))]
 
 #CLEAN GENO & PHENO ----
 pheno <- as.data.frame(pheno)
@@ -49,7 +33,6 @@ pheno <- pheno[, -1, drop = FALSE]
 
 # TREE ----
 tree <- read.tree(snakemake@params[["tree"]])
-# tree <- read.tree("../../data/cytokine_rooted_tree.tree")
 
 #ORDER DATA ----
 reorder_pheno <- match(tree$tip.label, rownames(pheno))

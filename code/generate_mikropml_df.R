@@ -26,11 +26,11 @@ if(snakemake@wildcards[['genome']] == "pan"){
   geno <- read.delim(file = snakemake@params[['pan_path']],
                      row.names = 1)
   
-}else if(snakemake@wildcards[['genome']] == "snp"){
+}else if(snakemake@wildcards[['genome']] == "core"){
   
-  print(paste0("using snp genome path:", snakemake@params[['snp_path']]))
+  print(paste0("using core genome path:", snakemake@params[['core_path']]))
   
-  geno <- read.delim(file = snakemake@params[['snp_path']],
+  geno <- read.delim(file = snakemake@params[['core_path']],
                      row.names = 1)
   
 }else if(snakemake@wildcards[['genome']] == "gene"){
