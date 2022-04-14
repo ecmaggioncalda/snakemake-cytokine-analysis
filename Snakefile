@@ -13,16 +13,20 @@ start_seed = 100
 seeds = range(start_seed, start_seed + nseeds)
 
 # attempt limit is set to 5 in the file code/submit_slurm.sh under restart-times
+def get_mem_mb_lowest(wildcards, attempt):
+    mem = attempt*1
+    return "%dGB" % (mem)
+
 def get_mem_mb_low(wildcards, attempt):
-     mem = attempt*4
+     mem = attempt*2
      return "%dGB" % (mem)
 
 def get_mem_mb_med(wildcards, attempt):
-     mem = attempt*8
+     mem = attempt*4
      return "%dGB" % (mem)
 
 def get_mem_mb_high(wildcards, attempt):
-     mem = attempt*16
+     mem = attempt*8
      return "%dGB" % (mem)
 
 rule all:
@@ -44,7 +48,9 @@ checkpoint prepro_overall:
         "log/{phenotype}/prepro_overall.txt"
     resources:
         ncores = ncores,
-        mem_mb = get_mem_mb_low
+        mem_mb = get_mem_mb_lowest
+    benchmark:
+        "benchmarks/{phenotype}/prepro_overall.txt"
     script:
         "code/prepro_overall.R"
 
@@ -63,7 +69,9 @@ rule generate_mikropml_df:
         "log/{phenotype}/{group}.{genome}.generate_mikropml_df.txt"
     resources:
         ncores = ncores,
-        mem_mb = get_mem_mb_med
+        mem_mb = get_mem_mb_lowest
+    benchmark:
+        "benchmarks/{phenotype}/{group}.{genome}.generate_mikropml_df.txt"
     script:
         "code/generate_mikropml_df.R"
 
@@ -79,11 +87,13 @@ rule run_treeWAS:
         plot = 'results/{phenotype}/{group}.{genome}.treeWAS.pdf'
     params:
         tree = tree
+    benchmark:
+        "benchmarks/{phenotype}/{group}.{genome}.treeWAS.txt"
     log:
         "log/{phenotype}/{group}.{genome}.treeWAS.txt"
     resources:
         ncores = ncores,
-        mem_mb = get_mem_mb_high
+        mem_mb = get_mem_mb_low
     script:
         "code/run_treeWAS.R"
 
@@ -99,10 +109,13 @@ rule run_hogwash_ungrouped:
         tree = tree,
         file_name = '{group}.{genome}.ungrouped',
         dir = "results/{phenotype}"
+    benchmark:
+        "benchmarks/{phenotype}/{group}.{genome}.hogwash.ungrouped.txt"
     log:
         "log/{phenotype}/{group}.{genome}.hogwash.ungrouped.txt"
     resources:
-        ncores = ncores
+        ncores = ncores,
+        mem_mb = get_mem_mb_low
     script:
         "code/run_hogwash_ungrouped.R"
 
@@ -122,10 +135,13 @@ rule run_hogwash_ungrouped:
 #         gene_key = config['gene_key']
 #     wildcard_constraints:
 #         genome = "core"
+#      benchmark:
+#         "benchmarks/{phenotype}/{group}.{genome}.hogwash.grouped.txt"
 #     log:
 #         "log/{phenotype}/{group}.{genome}.hogwash.grouped.txt"
 #     resources:
-#         ncores = ncores
+#         ncores = ncores,
+#         mem_mb = get_mem_mb_low
 #     script:
 #         "code/run_hogwash_grouped.R"
 
