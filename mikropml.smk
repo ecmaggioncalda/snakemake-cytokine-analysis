@@ -11,12 +11,12 @@ rule preprocess_data:
     log:
         "log/{phenotype}/{group}.{genome}.preprocess_data.txt"
     benchmark:
-        "benchmarks/{phenotype}.{group}.{genome}.preprocess_data.txt"
+        "benchmarks/{phenotype}/{group}.{genome}.preprocess_data.txt"
     params:
         outcome_colname='{phenotype}'
     resources:
-        ncores=ncores,
-        mem_mb = get_mem_mb_low
+        ncores=ncores, #This is present but not active in the cluster.json file since the multiple cores was not necessary for the size of input matrices, it was an inefficient use of resources; if preprocessing requires more, add back in this to the cluster.json file for this rule
+        mem_mb = get_mem_mb_lowest
     script:
         "code/preproc.R"
 
@@ -54,7 +54,7 @@ rule combine_results:
     benchmark:
         "benchmarks/{phenotype}/{group}.{genome}.combine_results_{type}.txt"
     resources:
-        mem_mb = get_mem_mb_low
+        mem_mb = get_mem_mb_lowest
     script:
         "code/combine_results.R"
 
@@ -69,7 +69,7 @@ rule combine_hp_performance:
     benchmark:
         "benchmarks/{phenotype}/{group}.{genome}.combine_hp_perf_{method}.txt"
     resources:
-        mem_mb = get_mem_mb_high
+        mem_mb = get_mem_mb_med
     script:
         "code/combine_hp_perf.R"
 
@@ -84,6 +84,8 @@ rule combine_benchmarks:
         mem_mb = get_mem_mb_low
     log:
         'log/{phenotype}/{group}.{genome}.combine_benchmarks.txt'
+    benchmark:
+        "benchmarks/{phenotype}/{group}.{genome}.combine_benchmarks.txt"
     script:
         'code/combine_benchmarks.R'
 
