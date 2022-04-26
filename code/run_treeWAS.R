@@ -30,6 +30,8 @@ pheno <- deframe(pheno)
 # TREE ----
 tree <- read.tree(snakemake@params[["tree"]])
 
+tree <- drop.tip(tree, tree$tip.label[!tree$tip.label %in% names(pheno)])
+
 #PRINT STATEMENTS ----
 print("dimension of geno, nrows (variants), ncol (genomes)")
 dim(geno)
