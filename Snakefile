@@ -29,6 +29,9 @@ def get_mem_mb_high(wildcards, attempt):
      mem = attempt*8
      return "%dGB" % (mem)
 
+def get_geno_path(wildcards):
+    return config["genome"][wildcards.genome]
+
 rule all:
     input:
         expand("aggregated/{phenotype}.runs.csv", phenotype=phenotype)
@@ -62,9 +65,11 @@ rule generate_mikropml_df:
     output:
         file_name = "data/mikropml/{phenotype}/{group}.{genome}.csv"
     params:
-        core_path = config['core'],
-        pan_path = config['pan'],
-        gene_path = config['gene']
+        path = get_geno_path
+        # core_path = config['core'],
+        # pan_path = config['pan'],
+        # gene_path = config['gene'],
+        # struct_path = config['struct']
     log:
         "log/{phenotype}/{group}.{genome}.generate_mikropml_df.txt"
     resources:
